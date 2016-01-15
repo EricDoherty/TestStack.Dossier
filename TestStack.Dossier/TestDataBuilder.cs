@@ -234,5 +234,40 @@ namespace TestStack.Dossier
                 modifier(childBuilder);
             return childBuilder;
         }
-    }
+
+		/// <summary>
+		/// Creates (and optionally modifies) a child list builder class of this builder; sharing the anonymous value fixture.
+		/// </summary>
+		/// <typeparam name="TChildObject">The type of the child object being built</typeparam>
+		/// <typeparam name="TChildBuilder">The type of the builder for the child object being built</typeparam>
+		/// <typeparam name="TChildListBuilder">The type of the list builder for the child object being built</typeparam>
+		/// <param name="childListBuilderFunction"></param>
+		/// <param name="modifier">An optional modifier lambda expression with fluent builder method calls for the child builder</param>
+		/// <returns>The instance of the child list builder</returns>
+		public virtual TChildListBuilder GetListChildBuilder<TChildObject, TChildBuilder, TChildListBuilder>(
+			Func<TChildListBuilder> childListBuilderFunction, Func<TChildListBuilder, TChildBuilder> modifier = null)
+			where TChildObject : class
+			where TChildBuilder : TestDataBuilder<TChildObject, TChildBuilder>, new()
+			where TChildListBuilder : ListBuilder<TChildObject, TChildBuilder>
+		{
+			var childBuilder = childListBuilderFunction();
+
+			if (modifier != null)
+			{
+				modifier(childBuilder);
+			}
+
+			return childBuilder;
+		}
+
+		/// <summary>
+		/// A method to override in order to populate default values if you are using a T4 template to create your TestDataBuilders
+		/// and want to set custom default values in a partial class
+		/// </summary>
+		/// <returns>The builder so that other method calls can be chained</returns>
+		protected virtual TBuilder PopulateDefaultValues()
+		{
+			return this as TBuilder;
+		}
+	}
 }
